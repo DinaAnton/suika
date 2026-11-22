@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>SUIKA 🐾</title>
+<meta name="description" content="SUIKA is a cute animal-merging puzzle game. Drop matching animals so they merge into bigger ones across three worlds: Ocean, Forest and Arctic.">
+<meta name="theme-color" content="#38bdf8">
+
+<!-- PWA / install -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SUIKA">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="application-name" content="SUIKA">
+
+<!-- Icons -->
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+
+<!-- Link previews (social sharing) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="SUIKA">
+<meta property="og:description" content="A cute animal-merging puzzle game with three worlds: Ocean, Forest and Arctic.">
+<meta property="og:image" content="assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SUIKA">
+<meta name="twitter:description" content="A cute animal-merging puzzle game with three worlds: Ocean, Forest and Arctic.">
+<meta name="twitter:image" content="assets/og-image.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ===================== MENU SCREEN ===================== -->
+  <section id="screen-menu" class="screen active">
+    <div class="menu-inner">
+      <div class="title-wrap">
+        <h1 class="game-title" aria-label="SUIKA"><span class="l" aria-hidden="true">S</span><span class="l" aria-hidden="true">U</span><span class="l" aria-hidden="true">I</span><span class="l" aria-hidden="true">K</span><span class="l" aria-hidden="true">A</span></h1>
+        <p class="subtitle">Drop the little animals, merge them, and grow the biggest one! 🐣→🐋</p>
+      </div>
+
+      <div class="theme-grid" id="theme-grid">
+        <!-- theme cards injected by JS -->
+      </div>
+
+      <button id="btn-howto" class="ghost-btn">How to play</button>
+    </div>
+
+    <div id="howto-panel" class="howto-panel hidden">
+      <div class="howto-card">
+        <h2>How to play</h2>
+        <ul>
+          <li>🖱️ / 👆 Move the animal left and right, then click / tap to drop it.</li>
+          <li>⌨️ Or use the ← → arrow keys and Space / Enter to drop.</li>
+          <li>🔗 Two identical animals that touch merge into a bigger one!</li>
+          <li>🚨 If the pile rises above the red line and stays there, the game is over.</li>
+          <li>🏆 Chain quick merges into combos for bonus points!</li>
+          <li>🐋 / 🐼 / 🐻‍❄️ The biggest animal in each world is the "final boss".</li>
+        </ul>
+        <button id="btn-howto-close" class="primary-btn">Got it!</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== GAME SCREEN ===================== -->
+  <section id="screen-game" class="screen">
+    <div id="game-wrap">
+
+      <header id="hud">
+        <button id="btn-home" class="icon-btn" title="Home / Change world" aria-label="Home / Change world">🏠</button>
+
+        <div class="hud-scores">
+          <div class="score-box">
+            <span class="score-label">Score</span>
+            <span id="score" class="score-value">0</span>
+          </div>
+          <div class="score-box best">
+            <span class="score-label">Best</span>
+            <span id="best" class="score-value">0</span>
+          </div>
+        </div>
+
+        <div class="hud-controls">
+          <button id="btn-music" class="icon-btn" title="Music" aria-label="Music">🎵</button>
+          <button id="btn-sfx" class="icon-btn" title="Sound effects" aria-label="Sound effects">🔊</button>
+          <button id="btn-pause" class="icon-btn" title="Pause" aria-label="Pause">⏸️</button>
+        </div>
+      </header>
+
+      <div id="next-panel">
+        <span class="next-label">Next</span>
+        <div class="next-thumb"><img id="next-img" src="" alt="next animal"></div>
+      </div>
+
+      <div id="canvas-container">
+        <div id="bg-layer"></div>
+        <canvas id="world"></canvas>
+        <div id="danger-line"></div>
+        <div id="particles-layer"></div>
+        <div id="floaters-layer"></div>
+
+        <div id="pause-overlay" class="overlay hidden">
+          <div class="overlay-card">
+            <h2>Paused</h2>
+            <button id="btn-resume" class="primary-btn">Resume</button>
+            <button id="btn-restart-paused" class="ghost-btn">Restart</button>
+            <button id="btn-home-paused" class="ghost-btn">Change world</button>
+          </div>
+        </div>
+
+        <div id="gameover-overlay" class="overlay hidden">
+          <div class="overlay-card">
+            <h2 id="gameover-title">Game over!</h2>
+            <p id="gameover-record" class="record-badge hidden">🎉 New best!</p>
+            <div class="final-scores">
+              <div><span>Score</span><strong id="final-score">0</strong></div>
+              <div><span>Best</span><strong id="final-best">0</strong></div>
+            </div>
+            <button id="btn-restart" class="primary-btn">Play again</button>
+            <button id="btn-home-over" class="ghost-btn">Change world</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="hint-line">Move: mouse / finger / arrow keys &nbsp;•&nbsp; Drop: click / tap / Space</p>
+    </div>
+  </section>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
